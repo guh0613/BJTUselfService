@@ -27,7 +27,7 @@ android {
     val keyPasswordFromEnv = System.getenv("KEY_PASSWORD")
 
     signingConfigs {
-        release {
+        create("release") {
             if (keystoreFileFromEnv != null && keystoreFileFromEnv.isNotEmpty() &&
                 keystorePasswordFromEnv != null && keystorePasswordFromEnv.isNotEmpty() &&
                 keyAliasFromEnv != null && keyAliasFromEnv.isNotEmpty() &&
