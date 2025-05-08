@@ -23,15 +23,6 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew
 
-      - name: Build Debug APK
-        run: ./gradlew assembleDebug
-
-      - name: Upload Debug APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: app-debug-apk
-          path: app/build/outputs/apk/debug/app-arm64-v8a-debug.apk
-
       - name: Decode Keystore and Setup for Release Build
         env:
           KEYSTORE_BASE64: ${{ secrets.RELEASE_KEYSTORE_BASE64 }}
@@ -39,11 +30,12 @@ jobs:
           KEY_ALIAS_SECRET: ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD_SECRET: ${{ secrets.KEY_PASSWORD }}
           KEYSTORE_FILE_PATH: app/release.jks
+          GRADLE_KEYSTORE_FILE_PATH: release.jks
         run: |
           echo "Decoding Keystore..."
           echo $KEYSTORE_BASE64 | base64 --decode > $KEYSTORE_FILE_PATH
           echo "Keystore decoded to $KEYSTORE_FILE_PATH"
-          echo "KEYSTORE_FILE=$KEYSTORE_FILE_PATH" >> $GITHUB_ENV
+          echo "KEYSTORE_FILE=$GRADLE_KEYSTORE_FILE_PATH" >> $GITHUB_ENV
           echo "KEYSTORE_PASSWORD=$KEYSTORE_PASSWORD_SECRET" >> $GITHUB_ENV
           echo "KEY_ALIAS=$KEY_ALIAS_SECRET" >> $GITHUB_ENV
           echo "KEY_PASSWORD=$KEY_PASSWORD_SECRET" >> $GITHUB_ENV
