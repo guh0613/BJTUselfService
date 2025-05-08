@@ -31,22 +31,24 @@ jobs:
       - name: Build Unsigned Release APK
         run: ./gradlew assembleRelease
 
+      - name: Get Build Tool Version
+        shell: bash
+        run: |
+          BUILD_TOOL_VERSION=$(ls /usr/local/lib/android/sdk/build-tools/ | tail -n 1)
+          echo "BUILD_TOOL_VERSION=$BUILD_TOOL_VERSION" >> $GITHUB_ENV
+
       - name: Sign APK
         id: sign-apk
         uses: tiann/zipalign-sign-android-release@v1.1.4
         with:
-          # The directory to find your release to sign
           releaseDirectory: app/build/outputs/apk/release
-          # The key used to sign your release in base64 encoded format
           signingKeyBase64: ${{ secrets.RELEASE_KEYSTORE_BASE64 }}
-          # The key alias
           alias: ${{ secrets.KEY_ALIAS }}
-          # The password to the keystore
           keyStorePassword: ${{ secrets.KEYSTORE_PASSWORD }}
-          # The password for the key
           keyPassword: ${{ secrets.KEY_PASSWORD }}
-          # Actually zipalign the apk, rather than just verifying it
           zipAlign: true
+        env:
+          BUILD_TOOLS_VERSION: ${{ env.BUILD_TOOL_VERSION }}
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
