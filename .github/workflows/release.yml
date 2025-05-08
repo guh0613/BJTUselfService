@@ -77,9 +77,12 @@ jobs:
       - name: Get Commit Message for Release Notes
         id: get_commit_message
         run: |
-          COMMIT_MESSAGE=$(git log -1 --pretty=%B ${{ github.sha }})
+          COMMIT_MESSAGE_BODY=$(git log -1 --pretty=%b ${{ github.sha }})
+          if [ -z "$COMMIT_MESSAGE_BODY" ]; then
+            COMMIT_MESSAGE_BODY="该版本的详细更新日志请参见相关的 commit 历史。"
+          fi
           echo "release_notes_body<<EOF" >> $GITHUB_OUTPUT
-          echo "$COMMIT_MESSAGE" >> $GITHUB_OUTPUT
+          echo "$COMMIT_MESSAGE_BODY" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
         shell: bash
         
