@@ -31,11 +31,12 @@ jobs:
       - name: Build Unsigned Release APK
         run: ./gradlew assembleRelease
 
-      - name: Get Build Tool Version
+      - name: Get Build Tool Version & Rename
         shell: bash
         run: |
           BUILD_TOOL_VERSION=$(ls /usr/local/lib/android/sdk/build-tools/ | tail -n 1)
           echo "BUILD_TOOL_VERSION=$BUILD_TOOL_VERSION" >> $GITHUB_ENV
+          mv app/build/outputs/apk/release/app-arm64-v8a-release-unsigned.apk app/build/outputs/apk/release/app-arm64-v8a-release.apk
 
       - name: Sign APK
         id: sign-apk
@@ -55,7 +56,7 @@ jobs:
         with:
           name: app-release-apk
           path: |
-            ${{ steps.sign_apk.outputs.signedReleaseFile }}
+            ${{ steps.sign-apk.outputs.signedReleaseFile }}
 
   create-release:
     name: Create Release
